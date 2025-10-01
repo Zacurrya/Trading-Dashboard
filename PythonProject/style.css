@@ -1,0 +1,35 @@
+/* Remove outline on input */
+div[data-testid="stTextInput"] > div > div > input {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: black;
+    background-color: white;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+/* Remove default focus from button */
+button[kind="primary"] {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Remove form border/outline */
+div[data-testid="stForm"] {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/*
+ * Makes the Streamlit text input placeholder black
+ * ONLY when the user's device is in dark mode.
+*/
+@media (prefers-color-scheme: dark) {
+  .stTextInput input::placeholder {
+    color: black;
+  }
+}
