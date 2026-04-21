@@ -1,17 +1,21 @@
 import yfinance as yf
-import anthropic
 import streamlit as st
 import finnhub as fh
 import os
+import importlib
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Cache the clients so they aren't recreated on every run
 @st.cache_resource
-def get_anthropic_client():
-    """Initializes and returns the Anthropic client."""
-    return anthropic.Anthropic()
+def get_gemini_client():
+    """Initializes and returns a configured Gemini client."""
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("Missing GEMINI_API_KEY (or GOOGLE_API_KEY) in environment variables.")
+    genai = importlib.import_module("google.genai")
+    return genai.Client(api_key=api_key)
 @st.cache_resource
 def get_finnhub_client():
     return fh.Client(api_key=os.environ.get("FINNHUB_API_KEY"))
@@ -30,20 +34,18 @@ def fetch_stock_data(ticker_symbol: str):
         return None
 
 @st.cache_data(ttl=3600)
-def generate_claude_analysis(ticker_symbol: str, model: str, prompt_template: str):
-    """Generates stock analysis using the Anthropic API."""
+def generate_gemini_analysis(ticker_symbol: str, model: str, prompt_template: str):
+    """Generates stock analysis using the Gemini API."""
     try:
-        client = get_anthropic_client()
+        client = get_gemini_client()
         prompt = prompt_template.format(ticker_input=ticker_symbol)
 
-        message = client.messages.create(
-            model=model,
-            max_tokens=1024,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return message.content[0].text
+        response = client.models.generate_content(model=model, contents=prompt)
+        if response and getattr(response, "text", None):
+            return response.text.strip()
+        return None
     except Exception as e:
-        st.error(f"Claude API error: {e}")
+        st.error(f"Gemini API error: {e}")
         return None
 
 @st.cache_data(ttl=3600)

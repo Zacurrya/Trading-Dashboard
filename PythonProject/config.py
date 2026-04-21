@@ -1,5 +1,5 @@
-# Anthropic API settings
-CLAUDE_MODEL = "claude-3-5-sonnet-20240620" # Using the latest model
+# Gemini API settings
+GEMINI_MODEL = "gemini-2.5-flash"
 ANALYSIS_PROMPT_TEMPLATE = (
     "You are a financial analyst providing a brief, neutral summary for a stock dashboard. "
     "Analyze the stock with ticker {ticker_input}, considering its recent performance, "

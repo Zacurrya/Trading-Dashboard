@@ -1,25 +1,75 @@
-📈 Streamlit Trading Dashboard
-A user-friendly stock analysis dashboard built with Streamlit. This tool allows you to search for stocks, get instant AI-powered analysis, and view professional analyst ratings all in one place.
+# Streamlit Trading Dashboard
 
-✨ Features
-Stock Search: Easily look up any stock using its ticker symbol (e.g., AAPL, GOOGL).
+A stock analysis dashboard built with Streamlit. Search tickers, view price charts, generate AI summaries, and check analyst ratings.
 
-AI-Powered Analysis: Get an instant, AI-generated summary of a stock's potential, recent performance, and key risk factors. 🤖
+## Features
 
-Analyst Ratings: View a consolidated summary of ratings from financial analysts, including buy, hold, and sell recommendations.
+- Stock lookup by ticker symbol (for example: AAPL, GOOGL)
+- AI-generated stock summary (Google Gemini)
+- Analyst recommendation trends (Finnhub)
+- Interactive candlestick charts (Plotly)
 
-Interactive Charts: Visualize historical stock performance with interactive charts.
+## Tech Stack
 
-🛠️ Tech Stack
-Framework: Streamlit
+- Python
+- Streamlit
+- yfinance
+- Plotly
+- Google Gemini SDK
+- finnhub-python
 
-Programming Language: Python
+## How to Run
 
-Key Libraries: Pandas, yfinance (or your data provider), OpenAI API (or your AI provider)
+### 1. Open the project root
 
-🚀 How to Use
-Enter a Ticker: Type the stock ticker you want to research into the search bar.
+Use this folder:
 
-Get AI Insights: Read the automatically generated AI analysis to get a quick overview of the stock.
+`P:\trading-dashboard\Trading-Dashboard`
 
-Check Analyst Ratings: Navigate to the "Analyst Ratings" tab to see what
+### 2. Install dependencies
+
+From the project root:
+
+```powershell
+c:/python313/python.exe -m pip install -r PythonProject/requirements.txt
+```
+
+If you are already inside `PythonProject`, use:
+
+```powershell
+c:/python313/python.exe -m pip install -r requirements.txt
+```
+
+### 3. Set API keys
+
+Create or update `.env` in the project root with:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+# or GOOGLE_API_KEY=your_gemini_api_key
+FINNHUB_API_KEY=your_finnhub_api_key
+```
+
+### 4. Start the app
+
+From the project root:
+
+```powershell
+c:/python313/python.exe -m streamlit run PythonProject/dashboard.py
+```
+
+Or from `PythonProject`:
+
+```powershell
+c:/python313/python.exe -m streamlit run dashboard.py
+```
+
+### 5. Open in browser
+
+Go to:
+
+`http://localhost:8501`
+
+### 6. Stop the app
+
+In the terminal running Streamlit, press `Ctrl+C`.

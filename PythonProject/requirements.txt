@@ -1,0 +1,6 @@
+streamlit
+yfinance
+plotly
+python-dotenv
+google-genai
+finnhub-python

@@ -2,10 +2,10 @@ import streamlit as st
 import yfinance as yf
 import plotly.graph_objs as go
 from dotenv import load_dotenv
+from pathlib import Path
 
-# Import your new modules
 import config
-from services import fetch_stock_data, generate_claude_analysis, get_analyst_ratings
+from services import fetch_stock_data, generate_gemini_analysis, get_analyst_ratings
 
 # --- App Setup ---
 load_dotenv()
@@ -20,11 +20,12 @@ if 'stock_info' not in st.session_state:
     st.session_state.stock_info = None
 if 'analyst_ratings' not in st.session_state:
     st.session_state.analyst_ratings = None
-# ADDED: Set the default time period selection to "1D"
 if 'selected_period' not in st.session_state:
     st.session_state.selected_period = "1D"
 
-st.logo("images/logo.png", size="large")
+logo_path = Path(__file__).resolve().parent / "Images" / "logo.png"
+if logo_path.exists():
+    st.logo(str(logo_path), size="large")
 
 # --- UI Layout ---
 left_col, right_col = st.columns(2, gap="large")
@@ -48,9 +49,9 @@ if ticker_input:
 
         if stock_info:
             with st.spinner('Generating stock analysis...'):
-                st.session_state.analysis_content = generate_claude_analysis(
-                    stock_info,
-                    config.CLAUDE_MODEL,
+                st.session_state.analysis_content = generate_gemini_analysis(
+                    ticker_input,
+                    config.GEMINI_MODEL,
                     config.ANALYSIS_PROMPT_TEMPLATE
                 )
             st.session_state.analyst_ratings = get_analyst_ratings(ticker_input)
@@ -68,7 +69,7 @@ if st.session_state.stock_info:
         </style>
     """, unsafe_allow_html=True)
 
-    # MOVED: Conditionally display the radio buttons in the left column
+    # Conditionally display the radio buttons in the left column
     with left_col:
         # This will only appear if a valid stock has been found
         st.radio(
@@ -81,7 +82,7 @@ if st.session_state.stock_info:
     with right_col:
         st.subheader(f"{info.get('longName')} ({st.session_state.processed_ticker})")
 
-        # Fetch and Display Price Data
+        # -- Fetch and Display Price Data
         hist = yf.Ticker(st.session_state.processed_ticker).history(period=time_period, interval=interval,
                                                                     prepost=prepost)
         current_price = info.get('regularMarketPrice')
@@ -100,7 +101,7 @@ if st.session_state.stock_info:
             price_display = f"""<div style="position: relative; z-index: 1; margin-top: -20px; margin-bottom: -80px; display: flex; align-items: baseline; gap: 15px;"><h2 style='margin: 0;'>{current_price:.2f} {currency}</h2><div style='font-size: 1.3rem; color: {color};'>{arrow} {abs(price_change):.2f} ({abs(percentage_change):.2f}%)<span style='font-size: 1rem; color: gray;'> {change_text_period}</span></div></div>"""
             st.markdown(price_display, unsafe_allow_html=True)
 
-        # Candlestick Chart
+        # -- Candlestick Chart
         if not hist.empty:
             fig = go.Figure(data=[
                 go.Candlestick(x=hist.index, open=hist['Open'], high=hist['High'], low=hist['Low'], close=hist['Close'],
@@ -111,7 +112,7 @@ if st.session_state.stock_info:
         else:
             st.write("No price history available for this period.")
 
-        # Analyst Ratings Donut Chart
+        # -- Analyst Ratings Donut Chart
         if st.session_state.analyst_ratings:
             latest_ratings = st.session_state.analyst_ratings[0]
             labels = ['Strong Buy', 'Buy', 'Hold', 'Sell', 'Strong Sell']
@@ -128,7 +129,7 @@ if st.session_state.stock_info:
             st.plotly_chart(donut_chart, use_container_width=True)
 
     with left_col:
-        # Display Analysis
+        # -- Display Analysis
         if st.session_state.analysis_content:
             st.markdown("---")
             st.markdown(st.session_state.analysis_content)
