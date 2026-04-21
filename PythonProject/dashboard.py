@@ -1,11 +1,12 @@
 import streamlit as st
-import yfinance as yf
 import plotly.graph_objs as go
+import pandas as pd
 from dotenv import load_dotenv
 from pathlib import Path
 
 import config
-from services import fetch_stock_data, generate_gemini_analysis, get_analyst_ratings
+from ai_service import generate_gemini_analysis
+from market_data_service import fetch_stock_data, fetch_price_history, get_analyst_ratings
 
 # --- App Setup ---
 load_dotenv()
@@ -83,8 +84,9 @@ if st.session_state.stock_info:
         st.subheader(f"{info.get('longName')} ({st.session_state.processed_ticker})")
 
         # -- Fetch and Display Price Data
-        hist = yf.Ticker(st.session_state.processed_ticker).history(period=time_period, interval=interval,
-                                                                    prepost=prepost)
+        hist = fetch_price_history(st.session_state.processed_ticker, time_period, interval, prepost)
+        if hist is None:
+            hist = pd.DataFrame()
         current_price = info.get('regularMarketPrice')
         currency = info.get('currency', '')
         time_period_map = {"1D": "Today", "1W": "in the last week", "3M": "in the last 3 months",
