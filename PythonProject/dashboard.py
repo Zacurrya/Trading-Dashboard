@@ -12,7 +12,7 @@ from market_data_service import fetch_stock_data, fetch_price_history, get_analy
 load_dotenv()
 st.set_page_config(page_title="Stock Analysis Dashboard", layout="wide")
 
-# --- Session State Initialization ---
+# --- Initialising states ---
 if 'processed_ticker' not in st.session_state:
     st.session_state.processed_ticker = ""
 if 'analysis_content' not in st.session_state:
@@ -31,7 +31,7 @@ if logo_path.exists():
 # --- UI Layout ---
 left_col, right_col = st.columns(2, gap="large")
 
-# Determine the selected period from session state BEFORE the UI is drawn
+# Determine the selected period from state before the UI is drawn
 selected = st.session_state.selected_period
 time_period, interval = config.PERIOD_OPTIONS[selected]
 
@@ -83,7 +83,7 @@ if st.session_state.stock_info:
     with right_col:
         st.subheader(f"{info.get('longName')} ({st.session_state.processed_ticker})")
 
-        # -- Fetch and Display Price Data
+        # -- Fetch and Display Price Data 
         hist = fetch_price_history(st.session_state.processed_ticker, time_period, interval, prepost)
         if hist is None:
             hist = pd.DataFrame()
@@ -100,7 +100,14 @@ if st.session_state.stock_info:
             percentage_change = (price_change / reference_price) * 100
             color = "green" if price_change >= 0 else "red"
             arrow = "▲" if price_change >= 0 else "▼"
-            price_display = f"""<div style="position: relative; z-index: 1; margin-top: -20px; margin-bottom: -80px; display: flex; align-items: baseline; gap: 15px;"><h2 style='margin: 0;'>{current_price:.2f} {currency}</h2><div style='font-size: 1.3rem; color: {color};'>{arrow} {abs(price_change):.2f} ({abs(percentage_change):.2f}%)<span style='font-size: 1rem; color: gray;'> {change_text_period}</span></div></div>"""
+            price_display = f"""
+            <div style="position: relative; z-index: 1; margin-top: -20px; margin-bottom: -80px; display: flex; align-items: baseline; gap: 15px;">
+                    <h2 style='margin: 0;'>{current_price:.2f} {currency}</h2>
+                    <div style='font-size: 1.3rem; color: {color};'>{arrow} {abs(price_change):.2f} ({abs(percentage_change):.2f}%)
+                        <span style='font-size: 1rem; color: gray;'> {change_text_period}</span>
+                    </div>
+            </div>
+            """
             st.markdown(price_display, unsafe_allow_html=True)
 
         # -- Candlestick Chart

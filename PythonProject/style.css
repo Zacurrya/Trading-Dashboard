@@ -25,8 +25,7 @@ div[data-testid="stForm"] {
 }
 
 /*
- * Makes the Streamlit text input placeholder black
- * ONLY when the user's device is in dark mode.
+ * Makes the Streamlit text input placeholder black when the user's device is in dark mode.
 */
 @media (prefers-color-scheme: dark) {
   .stTextInput input::placeholder {
