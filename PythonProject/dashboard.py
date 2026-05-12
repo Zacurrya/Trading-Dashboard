@@ -117,7 +117,7 @@ if st.session_state.stock_info:
                                name='Price')])
             fig.update_layout(dragmode=False, xaxis=dict(fixedrange=True), yaxis=dict(fixedrange=True),
                               template='plotly_dark')
-            st.plotly_chart(fig, use_container_width=True, config={'displaylogo': False})
+            st.plotly_chart(fig, width='stretch', config={'displaylogo': False})
         else:
             st.write("No price history available for this period.")
 
@@ -135,7 +135,7 @@ if st.session_state.stock_info:
                        insidetextorientation='horizontal')])
             donut_chart.update_layout(title_text="Analyst Ratings", title_font=dict(size=30), title_y=0.92,
                                       legend_title_text='Ratings')
-            st.plotly_chart(donut_chart, use_container_width=True)
+            st.plotly_chart(donut_chart, width='stretch')
 
     with left_col:
         # -- Display Analysis

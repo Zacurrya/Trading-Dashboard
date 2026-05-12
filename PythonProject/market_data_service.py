@@ -24,7 +24,7 @@ def fetch_stock_data(ticker_symbol: str):
         st.error(f"yfinance error: {e}")
         return None
 
-"""Fetch historical OHLC data for charting."""
+"""Fetch historical data for charting."""
 @st.cache_data(ttl=900)
 def fetch_price_history(ticker_symbol: str, period: str, interval: str, prepost: bool):
     try:
