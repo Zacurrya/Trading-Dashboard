@@ -1,7 +1,6 @@
 import streamlit as st
 import plotly.graph_objs as go
 import pandas as pd
-from dotenv import load_dotenv
 from pathlib import Path
 
 import config
@@ -9,7 +8,6 @@ from ai_service import generate_gemini_analysis
 from market_data_service import fetch_stock_data, fetch_price_history, get_analyst_ratings
 
 # --- App Setup ---
-load_dotenv()
 st.set_page_config(page_title="Stock Analysis Dashboard", layout="wide")
 
 # --- Initialising states ---

@@ -34,6 +34,12 @@ From the project root:
 c:/python313/python.exe -m pip install -r PythonProject/requirements.txt
 ```
 
+For deployment platforms that expect `requirements.txt` at the repository root, use:
+
+```powershell
+c:/python313/python.exe -m pip install -r requirements.txt
+```
+
 If you are already inside `PythonProject`, use:
 
 ```powershell
@@ -57,6 +63,8 @@ From the project root:
 ```powershell
 c:/python313/python.exe -m streamlit run PythonProject/dashboard.py
 ```
+
+For Streamlit Community Cloud, point the app to `streamlit_app.py` at the repository root.
 
 Or from `PythonProject`:
 

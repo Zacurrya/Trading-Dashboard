@@ -10,7 +10,16 @@ load_dotenv()
 """Initialize and cache a Finnhub client."""
 @st.cache_resource
 def get_finnhub_client():
-    return fh.Client(api_key=os.environ.get("FINNHUB_API_KEY"))
+    api_key = None
+    try:
+        api_key = st.secrets.get('FINNHUB_API_KEY')
+    except Exception:
+        api_key = None
+    if not api_key:
+        api_key = os.environ.get('FINNHUB_API_KEY')
+    if not api_key:
+        raise ValueError("Missing FINNHUB_API_KEY in .streamlit/secrets.toml or environment variables.")
+    return fh.Client(api_key=api_key)
 
 """Fetch stock information from yfinance and validate it."""
 @st.cache_data(ttl=3600)

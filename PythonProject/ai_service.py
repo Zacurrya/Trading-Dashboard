@@ -2,16 +2,19 @@ import google.genai
 import os
 
 import streamlit as st
-from dotenv import load_dotenv
-
-load_dotenv()
 
 """Initialize and cache a Gemini client."""
 @st.cache_resource
 def get_gemini_client():
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    api_key = None
+    try:
+        api_key = st.secrets.get('GOOGLE_API_KEY')
+    except Exception:
+        api_key = None
     if not api_key:
-        raise ValueError("Missing GEMINI_API_KEY (or GOOGLE_API_KEY) in environment variables.")
+        api_key = os.environ.get('GOOGLE_API_KEY') or os.environ.get('GEMINI_API_KEY')
+    if not api_key:
+        raise ValueError("Missing GEMINI API key: set GOOGLE_API_KEY in .streamlit/secrets.toml or environment variables.")
     return google.genai.Client(api_key=api_key)
 
 """Generate stock analysis text using the Gemini API."""
