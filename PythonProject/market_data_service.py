@@ -42,6 +42,7 @@ def fetch_price_history(ticker_symbol: str, period: str, interval: str, prepost:
         st.error(f"Price history error: {e}")
         return None
 
+
 """Fetch analyst recommendation trends from Finnhub."""
 @st.cache_data(ttl=3600)
 def get_analyst_ratings(ticker_symbol: str):
