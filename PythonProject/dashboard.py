@@ -120,16 +120,27 @@ if st.session_state.stock_info:
                 go.Candlestick(x=hist.index, open=hist['Open'], high=hist['High'], low=hist['Low'], close=hist['Close'],
                                name='Price')])
 
-            # Overlay selected EMAs
+            # Overlay selected EMAs (computed from daily data, mapped to chart timeframe)
             ema_colors = {9: '#00BFFF', 21: '#FFD700', 50: '#FF6347', 200: '#BA55D3'}
-            for span in sorted(selected_emas):
-                if len(hist) >= span:
-                    ema = hist['Close'].ewm(span=span, adjust=False).mean()
-                    fig.add_trace(go.Scatter(
-                        x=hist.index, y=ema, mode='lines',
-                        name=f'EMA {span}',
-                        line=dict(color=ema_colors[span], width=1.5),
-                    ))
+            if selected_emas:
+                ema_hist = fetch_price_history(st.session_state.processed_ticker, "2y", "1d", False)
+                if ema_hist is not None and not ema_hist.empty:
+                    for span in sorted(selected_emas):
+                        if len(ema_hist) >= span:
+                            ema_series = ema_hist['Close'].ewm(span=span, adjust=False).mean()
+                            # Build a date-indexed Series (plain dates, no tz) and deduplicate
+                            ema_by_date = pd.Series(ema_series.values, index=ema_series.index.date)
+                            ema_by_date = ema_by_date[~ema_by_date.index.duplicated(keep='last')]
+                            # Map to chart index via date lookup with forward-fill
+                            chart_dates = hist.index.date
+                            ema_aligned = ema_by_date.reindex(chart_dates, method='ffill')
+                            ema_aligned.index = hist.index
+                            if ema_aligned.notna().any():
+                                fig.add_trace(go.Scatter(
+                                    x=hist.index, y=ema_aligned.values, mode='lines',
+                                    name=f'EMA {span}',
+                                    line=dict(color=ema_colors[span], width=1.5),
+                                ))
 
             fig.update_layout(dragmode=False, xaxis=dict(fixedrange=True), yaxis=dict(fixedrange=True),
                               template='plotly_dark')
