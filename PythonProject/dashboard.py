@@ -77,6 +77,12 @@ if st.session_state.stock_info:
             horizontal=True,
             key="selected_period"  # Link the widget to the session state key
         )
+        selected_emas = st.multiselect(
+            "Exponential Moving Averages",
+            options=[9, 21, 50, 200],
+            default=[],
+            format_func=lambda x: f"{x}-day EMA",
+        )
 
     with right_col:
         st.subheader(f"{info.get('longName')} ({st.session_state.processed_ticker})")
@@ -113,6 +119,18 @@ if st.session_state.stock_info:
             fig = go.Figure(data=[
                 go.Candlestick(x=hist.index, open=hist['Open'], high=hist['High'], low=hist['Low'], close=hist['Close'],
                                name='Price')])
+
+            # Overlay selected EMAs
+            ema_colors = {9: '#00BFFF', 21: '#FFD700', 50: '#FF6347', 200: '#BA55D3'}
+            for span in sorted(selected_emas):
+                if len(hist) >= span:
+                    ema = hist['Close'].ewm(span=span, adjust=False).mean()
+                    fig.add_trace(go.Scatter(
+                        x=hist.index, y=ema, mode='lines',
+                        name=f'EMA {span}',
+                        line=dict(color=ema_colors[span], width=1.5),
+                    ))
+
             fig.update_layout(dragmode=False, xaxis=dict(fixedrange=True), yaxis=dict(fixedrange=True),
                               template='plotly_dark')
             st.plotly_chart(fig, width='stretch', config={'displaylogo': False})
